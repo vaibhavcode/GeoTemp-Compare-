@@ -1,14 +1,18 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import requests
+import streamlit as st
+
+
+st.title("GeoTemp Comparer")
 
 #this programme imports geocodes of two places from user and compare temprature
-city1 = str(input("Enter the name of the first city"))
-lat1 = float(input("Enter the latitude of the first city"))
-long1 = float(input("Enter the longitude of the first city"))
-city2 = str(input("Enter the name of the second city"))
-lat2 = float(input("Enter the latitude of the second city"))
-long2 = float(input("Enter the longitude of the second city"))
+city1 = st.text_input("Enter the name of the first city")
+lat1 = st.number_input("Enter the latitude of the first city", format="%.6f")
+long1 = st.number_input("Enter the longitude of the first city", format="%.6f")
+city2 = st.text_input("Enter the name of the second city")
+lat2 = st.number_input("Enter the latitude of the second city", format="%.6f")
+long2 = st.number_input("Enter the longitude of the second city", format="%.6f")
 
 url1 =  f"https://api.open-meteo.com/v1/forecast?latitude={lat1}&longitude={long1}&current=temperature_2m"
 url2 =  f"https://api.open-meteo.com/v1/forecast?latitude={lat2}&longitude={long2}&current=temperature_2m"
@@ -26,26 +30,27 @@ df = pd.DataFrame({
     })
 
 def tab():
-    print("The temperature and elevation comparison in tabular form:",df)
+    st.write("The temperature and elevation comparison in tabular form:")
+    st.dataframe(df)
 def visele():
-    plt.figure()
-    plt.bar(df["City"], df["Elevation (m)"])
-    plt.xlabel("City")
-    plt.ylabel("Elevation (meters)")
-    plt.title("Elevation Comparison")
-    plt.show()
+    fig, ax = plt.subplots()
+    ax.bar(df["City"], df["Elevation (m)"])
+    ax.set_xlabel("City")
+    ax.set_ylabel("Elevation (meters)")
+    ax.set_title("Elevation Comparison")
+    st.pyplot(fig)
 def vistemp():
     plt.figure()
     plt.bar(df["City"], df["Temperature (°C)"])
     plt.xlabel("City")
     plt.ylabel("Temperature (°C)")
     plt.title("Current Temperature Comparison")
-    plt.show()
-print("IF YOU WANT TO SEE THE COMPARISON IN TABULAR FORM ENTER 1\n")
-print("IF YOU WANT TO SEE COMPARISON GRAPH OF CITY VS ELEVATION ENTER 2\n")
-print("IF YOU WANT TO SEE COMPARISON GRAPH OF CITY VS TEMPERATURE ENTER 3\n")
-print("ENTER 4 TO EXIT")
-ch = int(input("Please enter your choice : "))
+    st.pyplot(plt)
+st.write("IF YOU WANT TO SEE THE COMPARISON IN TABULAR FORM ENTER 1\n")
+st.write("IF YOU WANT TO SEE COMPARISON GRAPH OF CITY VS ELEVATION ENTER 2\n")
+st.write("IF YOU WANT TO SEE COMPARISON GRAPH OF CITY VS TEMPERATURE ENTER 3\n")
+st.write("ENTER 4 TO EXIT")
+ch = st.number_input("Please enter your choice : ")
 if ch==1:
       tab()
 if ch==2:
@@ -54,7 +59,6 @@ if ch==3:
       vistemp()
 if ch==4:
       exit()
-
 
 
 
